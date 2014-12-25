@@ -2,7 +2,7 @@
 
 #include <WString.h>
 
-Graviton::Graviton(GravitonReader* reader, const GravitonService* services, unsigned char serviceCount) :
+GravitonCore::GravitonCore(GravitonReader* reader, const GravitonService* services, unsigned char serviceCount) :
   m_reader (reader),
   m_services (services),
   m_serviceCount (serviceCount)
@@ -10,13 +10,13 @@ Graviton::Graviton(GravitonReader* reader, const GravitonService* services, unsi
 }
 
 GravitonService&
-Graviton::serviceByIdx(unsigned char idx) const
+GravitonCore::serviceByIdx(unsigned char idx) const
 {
   return const_cast<GravitonService&>(m_services[idx]);
 }
 
 void
-Graviton::callMethod(const GravitonMethodCallPayload& payload, GravitonVariant* ret)
+GravitonCore::callMethod(const GravitonMethodCallPayload& payload, GravitonVariant* ret)
 {
   if (payload.serviceIdx < m_serviceCount) {
     const GravitonService& svc = m_services[payload.serviceIdx];
@@ -27,7 +27,7 @@ Graviton::callMethod(const GravitonMethodCallPayload& payload, GravitonVariant* 
 }
 
 void
-Graviton::findService(const GravitonFindServicePayload& payload, GravitonVariant* ret) const
+GravitonCore::findService(const GravitonFindServicePayload& payload, GravitonVariant* ret) const
 {
   for (unsigned char i = 0; i < m_serviceCount;i++) {
     if (strcmp (payload.name, m_services[i].name) == 0) {
@@ -40,7 +40,7 @@ Graviton::findService(const GravitonFindServicePayload& payload, GravitonVariant
 }
 
 void
-Graviton::findMethod(const GravitonFindMethodPayload& payload, GravitonVariant* ret) const
+GravitonCore::findMethod(const GravitonFindMethodPayload& payload, GravitonVariant* ret) const
 {
   const GravitonService& svc = m_services[payload.serviceIdx];
   for (unsigned char i = 0; i < svc.methodCount; i++) {
@@ -53,7 +53,7 @@ Graviton::findMethod(const GravitonFindMethodPayload& payload, GravitonVariant* 
 }
 
 void
-Graviton::loop()
+GravitonCore::loop()
 {
   m_reader->handleBuffer();
   if (m_reader->hasPacket()) {
@@ -82,19 +82,3 @@ Graviton::loop()
     }
   }
 }
-
-void
-do_peerCount(unsigned char argc, const GravitonMethodArg* arg, GravitonVariant* ret)
-{
-  *ret = GravitonVariant (0);
-}
-
-static const GravitonMethod introspectionMethods[] = {
-  { "peerCount", do_peerCount},
-};
-
-const GravitonService Graviton::introspectionService = {
-  "net.phrobo.graviton.introspection",
-  1,
-  introspectionMethods
-};

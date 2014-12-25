@@ -3,7 +3,10 @@
 
 #include "graviton-packet.h"
 
-#define PACKET_RINGBUF_SIZE 5
+#include <Arduino.h>
+
+#define PACKET_RINGBUF_SIZE 3
+#define STREAMBUF_SIZE 32
 
 class GravitonReader {
 public:
@@ -31,12 +34,12 @@ protected:
 private:
   void parseString(char* buf, unsigned char c, unsigned int maxSize);
 
-  unsigned char m_streamBuf[128];
-  int m_bufHead;
-  int m_bufTail;
-  int m_curPacketBuf;
-  unsigned int m_parserBufIdx;
-  int m_lastPacketBuf;
+  unsigned char m_streamBuf[STREAMBUF_SIZE];
+  uint8_t m_bufHead;
+  uint8_t m_bufTail;
+  uint8_t m_curPacketBuf;
+  uint8_t m_parserBufIdx;
+  uint8_t m_lastPacketBuf;
   GravitonPacket m_packets[PACKET_RINGBUF_SIZE];
   ParserState m_parserState;
 };

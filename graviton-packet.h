@@ -6,7 +6,8 @@
 struct GravitonMethodCallPayload {
   unsigned char serviceIdx;
   unsigned char methodIdx;
-  GravitonMethodArg args[5];
+  unsigned char argv;
+  GravitonMethodArg* args;
 };
 
 struct GravitonPropertySetPayload {

@@ -3,35 +3,48 @@
 
 #include "graviton-variant.h"
 
-struct GravitonMethodArg {
-  char name[16];
-  union {
-    int asInt;
-    char asString[16];
-  } value;
-};
-
-typedef void (*GravitonMethodFunc)(unsigned char argc, const GravitonMethodArg* argv, GravitonVariant* ret);
-
-#ifndef GRAVITON_METHOD_NAME_MAXLEN
-#define GRAVITON_METHOD_NAME_MAXLEN 16
-#endif // GRAVITON_METHOD_NAME_MAXLEN
-
-struct GravitonMethod {
-  const char name[GRAVITON_METHOD_NAME_MAXLEN];
-  const GravitonMethodFunc func;
-};
-
 #ifndef GRAVITON_SERVICE_NAME_MAXLEN
 #define GRAVITON_SERVICE_NAME_MAXLEN 35
 #endif // GRAVITON_SERVICE_NAME_MAXLEN
 
+#ifndef GRAVITON_METHOD_NAME_MAXLEN
+#define GRAVITON_METHOD_NAME_MAXLEN 15
+#endif // GRAVITON_METHOD_NAME_MAXLEN
+
+#ifndef GRAVITON_ARG_NAME_MAXLEN
+#define GRAVITON_ARG_NAME_MAXLEN 15
+#endif // GRAVITON_ARG_NAME_MAXLEN
+
+
+struct GravitonMethodArg {
+  char name[GRAVITON_ARG_NAME_MAXLEN];
+  GravitonVariant value;
+};
+
+typedef void (*GravitonMethodFunc)(unsigned char argc, const GravitonMethodArg* argv, GravitonVariant* ret);
+
+struct GravitonMethod {
+  GravitonMethod(const char* _name, const GravitonMethodFunc _func) :
+    name(_name),
+    func(_func) {}
+  const char* name;
+  const GravitonMethodFunc func;
+};
+
 struct GravitonService {
-  const char name[GRAVITON_SERVICE_NAME_MAXLEN];
+  GravitonService(const char* _name, unsigned char _methodCount, const GravitonMethod* _methods) :
+    name(_name),
+    methodCount(_methodCount),
+    methods(_methods) {}
+  GravitonMethod& methodByIdx(unsigned char idx) const;
+
+  const char* name;
   unsigned char methodCount;
   const GravitonMethod* methods;
+};
 
-  GravitonMethod& methodByIdx(unsigned char idx) const;
+struct GravitonIntrospectionService : public GravitonService {
+  GravitonIntrospectionService();
 };
 
 #endif // GRAVITON_METHOD_H
