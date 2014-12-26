@@ -3,7 +3,7 @@
 
 #include "graviton-core.h"
 
-#define GRAVITON_STATIC_INIT(reader, methods, methodCount) \
-  static GravitonCore Graviton (reader, methods, methodCount);
+#define GRAVITON_STATIC_INIT(reader, services, serviceCount) \
+  static GravitonCore<serviceCount> Graviton (reader, services);
 
 #endif // GRAVITON_H
